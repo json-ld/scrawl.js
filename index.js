@@ -4,12 +4,12 @@ var email = require('emailjs');
 var fs = require('fs');
 var path = require('path');
 var program = require('commander');
-var scrawl = require('./scrawl');
+var scrawl = require('./www/scrawl');
 var Twitter = require('twitter');
-var wp = require('wporg');
+var wp = require('wordpress');
 
 program
-  .version('0.3.0')
+  .version('0.4.0')
   .option('-d, --directory <directory>', 'The directory to process.')
   .option('-m, --html', 'If set, write the minutes to an index.html file')
   .option('-w, --wordpress', 'If set, publish the minutes to the blog')
@@ -21,7 +21,8 @@ program
   .parse(process.argv);
 
 if(!program.directory) {
-  console.log('Error: You must specify a directory to process');
+  console.error('Error: You must specify a directory to process');
+  program.outputHelp();
   process.exit(1);
 }
 
@@ -31,9 +32,9 @@ var logFile = path.resolve(path.join(program.directory, 'irc.log'));
 var audioFile = path.resolve(path.join(program.directory, 'audio.ogg'));
 var indexFile = path.resolve(path.join(program.directory, 'index.html'));
 var htmlHeader = fs.readFileSync(
-  __dirname + '/header.html', {encoding: 'utf8'});
+  __dirname + '/www/_partials/header.html', {encoding: 'utf8'});
 var htmlFooter = fs.readFileSync(
-  __dirname + '/footer.html', {encoding: 'utf8'});
+  __dirname + '/www/_partials/footer.html', {encoding: 'utf8'});
 var peopleJson = fs.readFileSync(
   __dirname + '/people.json', {encoding: 'utf8'});
 var gLogData = '';

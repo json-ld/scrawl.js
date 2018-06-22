@@ -1,0 +1,12 @@
+{
+  "Person Name": {
+    "alias": [
+      "person-nick",
+      "other-nickname"
+    ],
+    "homepage": "https://example.com/~person-nick"
+  },
+  "Other Person": {
+    "homepage": "http://example.com/~other-person"
+  }
+}
