@@ -27,10 +27,12 @@ if(!program.directory) {
 }
 
 // setup global variables
-var dstDir = path.resolve(path.join(program.directory));
-var logFile = path.resolve(path.join(program.directory, 'irc.log'));
-var audioFile = path.resolve(path.join(program.directory, 'audio.ogg'));
-var indexFile = path.resolve(path.join(program.directory, 'index.html'));
+const dstDir = path.resolve(path.join(program.directory));
+const logFile = path.resolve(dstDir, 'irc.log');
+const audioFile = path.resolve(dstDir, 'audio.ogg');
+const indexFile = path.resolve(dstDir, 'index.html');
+const minutesDir = path.join(dstDir, '/..');
+
 var htmlHeader = fs.readFileSync(
   __dirname + '/www/_partials/header.html', {encoding: 'utf8'});
 var htmlFooter = fs.readFileSync(
@@ -173,7 +175,7 @@ async.waterfall([ function(callback) {
     if(!program.quiet) {
       console.log('scrawl: Writing meeting summaries...');
     }
-    var minutesDir = __dirname + '/..';
+    // uses constant minutesDir
     var logFiles = [];
     async.auto({
       readDirs: function(callback) {
