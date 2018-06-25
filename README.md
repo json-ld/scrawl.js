@@ -12,7 +12,7 @@ $ npm i
 $ npm start
 ```
 
-## Usage
+## Setup
 
 Scrawl works on directories structured like:
 ```
@@ -32,13 +32,63 @@ Now, we need to setup the nicknames of all the people in the group.
 So, copy `people.json.example` to `people.json` and fill in names, homepages,
 and nicknames as needed.
 
+## Command Line Usage
+
+To install scrawl globally, run...
+```sh
+$ npm i -g
+```
+
 Then...
 ```sh
-$ npm start -- -d test/fixtures/2011-07-04/
+$ scrawl -m -d 2011-07-04/
 ```
-(change the `test/fixture/2011-07-04/` to point to your directory)
 
-If that went as planned, there will be an `index.html` file in that directory!
+To include a parent index of all minutes directories, run...
+```sh
+$ scrawl -i -m -d 2011-07-04/
+```
+
+The resulting directory will look like
+```
+2011-07-04/
+  ./irc.log
+  ./audio.ogg
+  ./index.html
+index.html
+```
+
+### Command Line Help Output
+
+There are several more options available.
+
+```sh
+
+  Usage: index.js [options]
+
+  Options:
+
+    -h, --help                   output usage information
+    -V, --version                output the version number
+    -d, --directory <directory>  The directory to process.
+    -m, --html                   If set, write the minutes to an index.html file
+    -w, --wordpress              If set, publish the minutes to the blog
+    -e, --email                  If set, publish the minutes to the mailing list
+    -t, --twitter                If set, publish the minutes to Twitter
+    -g, --google                 If set, publish the minutes to G+
+    -i, --index                  Build meeting index
+    -q, --quiet                  Don't print status information to the console
+
+```
+
+The WordPress, Google, and Twitter related switches also require some custom
+environment variables to be setup. For examples of those, see the
+[publish.sh.example](publish.sh.example).
+
+## Development
+
+During development, you'll want to test with the working copy version of
+scrawl. For that, simply use `node index.js -h` or `npm start -- -h`.
 
 ## License
 
