@@ -163,7 +163,7 @@ async.waterfall([ function(callback) {
   // write the index.html file to disk
   if(program.html) {
     if(!program.quiet) {
-      console.log('scrawl: Writing', indexFile);
+      console.log('scrawl: Writing minutes to', indexFile);
     }
     fs.writeFile(indexFile, minutes, {}, callback);
   } else {
@@ -173,7 +173,8 @@ async.waterfall([ function(callback) {
   // write the index.html file to disk
   if(program.index) {
     if(!program.quiet) {
-      console.log('scrawl: Writing meeting summaries...');
+      console.log('scrawl: Writing meeting summaries to',
+                  `${minutesDir}/index.html`);
     }
     // uses constant minutesDir
     var logFiles = [];
