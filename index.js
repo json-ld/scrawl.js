@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var _ = require('underscore');
 var async = require('async');
 var email = require('emailjs');

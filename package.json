@@ -4,6 +4,7 @@
   "scripts": {
     "start": "node index.js"
   },
+  "bin": "index.js",
   "dependencies": {
     "async": "~0.2.9",
     "commander": "~1.0.0",
