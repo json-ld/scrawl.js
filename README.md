@@ -29,8 +29,19 @@ The output files will be added to the same directory for simpler hosting of
 all the things.
 
 Now, we need to setup the nicknames of all the people in the group.
-So, copy `people.json.example` to `people.json` and fill in names, homepages,
-and nicknames as needed.
+So, copy `people.json.example` to `www/people.json` and fill in names,
+homepages, and nicknames as needed.
+
+To edit logs in a Web page, it's recommended to install the `http-server` node
+package and use that (for now):
+
+```sh
+$ npm i -g http-server
+$ http-server www/
+```
+
+Once that's done, you can visit `http://localhost:8080/` to paste IRC logs, see
+the output, and copy/paste the HTML (etc) wherever you need it.
 
 ## Command Line Usage
 

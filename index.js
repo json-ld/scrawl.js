@@ -40,7 +40,7 @@ var htmlHeader = fs.readFileSync(
 var htmlFooter = fs.readFileSync(
   __dirname + '/www/_partials/footer.html', {encoding: 'utf8'});
 var peopleJson = fs.readFileSync(
-  __dirname + '/people.json', {encoding: 'utf8'});
+  __dirname + '/www/people.json', {encoding: 'utf8'});
 var gLogData = '';
 var haveAudio = false;
 var gDate = path.basename(dstDir);
