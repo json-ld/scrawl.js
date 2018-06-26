@@ -57,6 +57,13 @@ li {
    font-size: 1.25em;
 }
 
+.comment-link {
+  display: none;
+}
+.comment:hover .comment-link {
+  display: inline;
+}
+
 dt {
    font-style: oblique;
 }

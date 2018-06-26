@@ -4,7 +4,6 @@
  * nice, stand-alone HTML page from the input.
  */
 (function() {
-  var $ = (typeof jQuery !== 'undefined') ? jQuery : undefined;
   /* Standard regular expressions to use when matching lines */
   var commentRx = /^\[?(\S*|\w+ \S+)\]\s+<([^>]*)>\s+(.*)$/;
   var scribeRx = /^(scribe|scribenick):.*$/i;
@@ -226,9 +225,7 @@
     if(textMode === 'html')
     {
       scrawl.counter += 1;
-      rval = '<div onmouseout="$(\'#link-' + scrawl.counter + '\').hide()" ' +
-        'onmouseover="$(\'#link-' + scrawl.counter + '\').show()" ' +
-        'id="' + scrawl.counter + '" ';
+      rval = '<div id="' + scrawl.counter + '" ';
 
       if(person !== undefined)
       {
@@ -248,7 +245,7 @@
       }
 
       rval += ' <a id="link-' + scrawl.counter +
-        '" style="display:none;" href="#'+ scrawl.counter + '">✪</a></div>\n';
+        '" class="comment-link" href="#'+ scrawl.counter + '">✪</a></div>\n';
     }
     else
     {
