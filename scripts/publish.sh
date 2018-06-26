@@ -1,0 +1,92 @@
+#!/bin/bash
+#
+# Generates minutes for the directory given
+
+#!/bin/sh
+#
+# Fetches the raw minutes for cleanup
+
+display_usage() {
+	echo "Publish CCG minutes via email and social media."
+	echo ""
+	echo "Usage: ./publish [-h] [-d directory]"
+	echo "  -d [/path/to/YYYY-MM-DD]     pass directory"
+    echo "  -h                           display help"
+    echo ""
+    echo "Examples:"
+	echo ""
+    echo "  ./publish -d /path/to/w3c-ccg-meeting/2018-05-15"
+    echo "      previews 2018-05-15 minutes and audio in preview mode (does not broadcast results)"
+    echo ""
+}
+
+if [ $# -eq 0 ]
+  then
+    display_usage
+    exit 1
+else
+	for i in "$@"
+	do
+	case $i in
+		--)
+	    display_usage
+	    exit 0
+	    ;;
+	    -h|--help)
+	    display_usage
+	    exit 0
+	    ;;
+	    -d|--directory)
+		shift
+	    DIRECTORY=$1
+	    break
+	    ;;
+	esac
+	done
+fi
+
+echo "....Publishing minutes for directory=$DIRECTORY"
+
+DATE="$(basename $DIRECTORY)"
+
+source ../publishing.cfg
+
+echo "Generating minutes and social media posts for $DATE"
+MESSAGE="Add text minutes and audio logs for $DATE telecon."
+
+# Add default values for missing env vars
+if [ -z "$NODE_COMMAND" ]; then
+    NODE_COMMAND="nodejs"
+fi
+
+if [ -z "$SCRAWL_TO_EMAIL_ADDRESS" ]; then
+    SCRAWL_TO_EMAIL_ADDRESS="public-credentials@w3.org"
+fi
+
+
+# Generate minutes
+$NODE_COMMAND index.js -d $DIRECTORY -m -i
+
+# Make sure we want to continue
+read -r -p "Check for problems, press 'y' when ready to commit to git, tweet/email: " BROADCAST
+
+echo "Broadcast: $BROADCAST"
+
+if [ "$BROADCAST" != "y" ]
+then
+   echo "Aborting git commit and social media broadcast."
+   exit
+fi
+
+git add $DIRECTORY/irc.log $DIRECTORY/index.html $DIRECTORY/audio.ogg
+git commit $DIRECTORY/irc.log $DIRECTORY/index.html $DIRECTORY/audio.ogg $DIRECTORY/../index.html -m "$MESSAGE"
+git push
+
+# Generate G+ post summary
+# $NODE_COMMAND index.js -d $1 -w
+
+# Email minutes
+$NODE_COMMAND index.js -d $DIRECTORY -e
+
+# Tweet telecon results
+$NODE_COMMAND index.js -d $DIRECTORY -t
