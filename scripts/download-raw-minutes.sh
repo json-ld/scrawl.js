@@ -54,7 +54,7 @@ echo "....Downloading minutes for date=$DATE"
 echo "....Auto launch setting=$AUTO_LAUNCH"
 
 # Get the editor commands
-. ./publishing.cfg
+source ../publishing.cfg
 
 # Create the minutes directory if it doesn't already exist
 mkdir -p $DATE

@@ -96,6 +96,13 @@ The WordPress, Google, and Twitter related switches also require some custom
 environment variables to be setup. For examples of those, see the
 [publish.sh.example](publish.sh.example).
 
+## Wrapping bash scripts
+
+If you're on a machine that has bash available, there are a couple useful tools
+in the `scripts/` folder. To configure them, copy the `publishing.cfg.example`
+to `publishing.cfg`, make your changes, and then run the scripts (which wrap
+the node code).
+
 ## Development
 
 During development, you'll want to test with the working copy version of
