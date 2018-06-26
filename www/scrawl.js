@@ -647,8 +647,12 @@
           peoplePresent += ', ';
         }
 
-        peoplePresent += '<a href="' + person.homepage + '">'+
-          person.name + '</a>'
+        if ('homepage' in person) {
+          peoplePresent += '<a href="' + person.homepage + '">'+
+            person.name + '</a>';
+        } else {
+          peoplePresent += person.name;
+        }
       }
       if(context.totalPresent) {
         peoplePresent += ', ' + context.totalPresent;
