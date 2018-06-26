@@ -52,6 +52,10 @@ li {
    text-indent: -1.5em;
 }
 
+.comment:target {
+  background: #fff4c3;
+}
+
 .comment-continuation {
    margin-left: 2em;
    font-size: 1.25em;
