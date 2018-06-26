@@ -756,7 +756,7 @@
     var rval = '';
     var minutes = '';
     var summary = '';
-    var ircLines = ircLog.split('\n');
+    var ircLines = ircLog.split(/\r?\n/);
     var aliases = scrawl.generateAliases();
     scrawl.counter = 0;
 
