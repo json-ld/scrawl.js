@@ -67,6 +67,7 @@ Audio from the meeting is available as well (link provided below).
 ----------------------------------------------------------------
 {{{content}}}`;
 
+// Mustache template - vars: gDate, formattedItems, content
 const GPLUS_BODY = `*JSON-LD CG Meeting Summary for {{gDate}}*
 
 We discussed {{formattedItems}}.
@@ -79,9 +80,14 @@ https://json-ld.github.io/minutes/{{gDate}}/
 
 #w3c #json-ld`;
 
+// Mustache template - vars: message, gDate
 const TWITTER_BODY = `JSON-LD CG discusses {{message}}:
 https://json-ld.github.io/minutes/{{gDate}}/ #w3c #json-ld`;
 
+// Mustache template - vars: gDate
+const WORDPRESS_TITLE = 'JSON-LD CG Meeting Minutes for {{gDate}}';
+// Location of date-based minutes folders; MUST end in a forward slash
+const MINUTES_BASE_URL = 'https://json-ld.github.io/minutes/'
 
 /************************* Utility Functions *********************************/
 function postToWordpress(username, password, content, callback) {
@@ -97,12 +103,12 @@ function postToWordpress(username, password, content, callback) {
   wpSummary = wpSummary.substring(
     wpSummary.indexOf('<dl>'), wpSummary.indexOf('</dl>') + 5);
   wpSummary = wpSummary.replace(/href=\"#/g,
-    'href="https://json-ld.github.io/minutes/' + gDate + '/#');
+    'href="' + MINUTES_BASE_URL + gDate + '/#');
   wpSummary = wpSummary.replace(/href=\"audio/g,
-    'href="https://json-ld.github.io/minutes/' + gDate + '/audio');
+    'href="' + MINUTES_BASE_URL + gDate + '/audio');
   wpSummary = wpSummary.replace(/<div><audio[\s\S]*\/audio><\/div>/g, '');
   wpSummary += '<p>Detailed minutes and recorded audio for this call are ' +
-    '<a href="https://json-ld.github.io/minutes/' + gDate +
+    '<a href="' + MINUTES_BASE_URL + gDate +
     '/">available in the archive</a>.</p>';
 
   // calculate the proper post date
@@ -446,7 +452,7 @@ async.waterfall([ function(callback) {
       console.log('scrawl: Creating new blog post.');
     }
     var content = {
-      post_title: 'JSON-LD CG Meeting Minutes for ' + gDate,
+      post_title: Mustache.render(WORDPRESS_TITLE, {gDate}),
       post_content: scrawl.generateMinutes(gLogData, 'html', gDate, haveAudio)
     };
 
@@ -460,7 +466,7 @@ async.waterfall([ function(callback) {
       prompt.get({
         properties: {
           username: {
-            description: 'Enter the JSON-LD WordPress username',
+            description: 'Enter the WordPress username',
             pattern: /^.{4,}$/,
             message: 'The username must be at least 4 characters.',
             'default': 'msporny'
