@@ -6,6 +6,7 @@ var email = require('emailjs');
 var fs = require('fs');
 var path = require('path');
 var program = require('commander');
+const Mustache = require('mustache');
 var scrawl = require('./www/scrawl');
 var Twitter = require('twitter');
 var wp = require('wordpress');
@@ -49,6 +50,17 @@ gDate = gDate.match(/([0-9]{4}-[0-9]{2}-[0-9]{2})/)[1];
 // configure scrawl
 scrawl.group = 'JSON-LD CG Telecon';
 scrawl.people = JSON.parse(peopleJson);
+
+const EMAIL_BODY = `Thanks to {{scribe}} for scribing this week! The minutes
+for this week's JSON-LD CG telecon are now available:
+
+https://json-ld.github.io/minutes/{{gDate}}/
+
+Full text of the discussion follows for W3C archival purposes.
+Audio from the meeting is available as well (link provided below).
+
+----------------------------------------------------------------
+{{{content}}}`;
 
 /************************* Utility Functions *********************************/
 function postToWordpress(username, password, content, callback) {
@@ -286,13 +298,7 @@ async.waterfall([ function(callback) {
     var content = scrawl.generateMinutes(gLogData, 'text', gDate, haveAudio);
     var scribe = content.match(/Scribe:\n\s(.*)\n/g)[0]
       .replace(/\n/g, '').replace('Scribe:  ', '');
-    content = 'Thanks to ' + scribe + ' for scribing this week! The minutes\n' +
-      'for this week\'s JSON-LD CG telecon are now available:\n\n' +
-      'https://json-ld.github.io/minutes/'+ gDate + '/\n\n' +
-      'Full text of the discussion follows for W3C archival purposes.\n' +
-      'Audio from the meeting is available as well (link provided below).\n\n' +
-      '----------------------------------------------------------------\n' +
-      content;
+    content = Mustache.render(EMAIL_BODY, {scribe, gDate, content});
 
     if(process.env.SCRAWL_EMAIL_USERNAME && process.env.SCRAWL_EMAIL_PASSWORD &&
       process.env.SCRAWL_EMAIL_SERVER) {
