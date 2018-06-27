@@ -67,6 +67,18 @@ Audio from the meeting is available as well (link provided below).
 ----------------------------------------------------------------
 {{{content}}}`;
 
+const GPLUS_BODY = `*JSON-LD CG Meeting Summary for {{gDate}}*
+
+We discussed {{formattedItems}}.
+
+{{{content}}}
+
+Full transcript and audio logs are available here:
+
+https://json-ld.github.io/minutes/{{gDate}}/
+
+#w3c #json-ld`;
+
 /************************* Utility Functions *********************************/
 function postToWordpress(username, password, content, callback) {
   var client = wp.createClient({
@@ -368,11 +380,7 @@ async.waterfall([ function(callback) {
     }
 
     // format in a way that is readable on G+
-    content = '*JSON-LD CG Meeting Summary for ' + gDate + '*\n\n' +
-      'We discussed ' + formattedItems + '.\n\n' +
-      content + '\nFull transcript and audio logs are available here:\n\n' +
-      'https://json-ld.github.io/minutes/' + gDate + '/\n\n' +
-      '#w3c #json-ld';
+    content = Mustache.render(GPLUS_BODY, {gDate, formattedItems, content});
 
     console.log('scrawl: You will need to paste this to your G+ stream:\n');
     console.log(content);
