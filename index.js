@@ -164,7 +164,7 @@ function sendEmail(username, password, hostname, content, callback) {
     }
 
     if(!program.quiet) {
-      console.log('scrawl: Sent minutes email to public-linked-json@w3.org');
+      console.log(`scrawl: Sent minutes email to ${EMAIL_TO}`);
     }
     callback();
   });
