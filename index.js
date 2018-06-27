@@ -51,6 +51,11 @@ gDate = gDate.match(/([0-9]{4}-[0-9]{2}-[0-9]{2})/)[1];
 scrawl.group = 'JSON-LD CG Telecon';
 scrawl.people = JSON.parse(peopleJson);
 
+const EMAIL_TO = 'JSON-LD CG <public-linked-json@w3.org>';
+const EMAIL_FROM = 'gregg@greggkellogg.net';
+// Mustache template -- vars: gDate
+const EMAIL_SUBJECT = '[MINUTES] W3C JSON-LD CG Call - {{gDate}} 12pm ET';
+// Mustache template -- vars: scribe, gDate, content
 const EMAIL_BODY = `Thanks to {{scribe}} for scribing this week! The minutes
 for this week's JSON-LD CG telecon are now available:
 
@@ -126,10 +131,10 @@ function sendEmail(username, password, hostname, content, callback) {
   // send the message
   server.send({
     text:    content,
-    from: 'gregg@greggkellogg.net',
+    from: EMAIL_FROM,
     //from:    username + '@' + hostname,
-    to:      'JSON-LD CG <public-linked-json@w3.org>',
-    subject: '[MINUTES] W3C JSON-LD CG Call - ' + gDate + ' 12pm ET'
+    to: EMAIL_TO,
+    subject: Mustache.render(EMAIL_SUBJECT, {gDate})
   }, function(err, message) {
     if(err) {
       console.log('scrawl:', err);
