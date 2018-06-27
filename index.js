@@ -79,6 +79,10 @@ https://json-ld.github.io/minutes/{{gDate}}/
 
 #w3c #json-ld`;
 
+const TWITTER_BODY = `JSON-LD CG discusses {{message}}:
+https://json-ld.github.io/minutes/{{gDate}}/ #w3c #json-ld`;
+
+
 /************************* Utility Functions *********************************/
 function postToWordpress(username, password, content, callback) {
   var client = wp.createClient({
@@ -423,9 +427,8 @@ async.waterfall([ function(callback) {
         }
       }, function(err, results) {
         // construct the tweet
-        var tweet = 'JSON-LD CG discusses ' +
-          results.message + ': https://json-ld.github.io/minutes/' +
-          gDate + '/ #w3c #json-ld';
+        var tweet = Mustache.render(TWITTER_BODY,
+                                    {message: results.message, gDate});
 
         // send the tweet
         twitter.updateStatus(tweet, function(data) {
