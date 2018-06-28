@@ -81,6 +81,14 @@ gDate = gDate.match(/([0-9]{4}-[0-9]{2}-[0-9]{2})/)[1];
 scrawl.group = config.group || 'Telecon';
 scrawl.people = JSON.parse(peopleJson);
 
+// we can't make any URLs without this...so fail...
+if (!('minutes_base_url' in config)) {
+  console.error('Error: The `minutes_base_url` was not set in the config');
+  process.exit(1);
+}
+// Location of date-based minutes folders; MUST end in a forward slash
+scrawl.minutes_base_url = config.minutes_base_url;
+
 // Mustache template - vars: gDate, formattedItems, content, minutes_base_url
 const GPLUS_BODY = ('gplus' in config && 'body' in config.gplus)
                     ? config.gplus.body
@@ -105,10 +113,6 @@ const TWITTER_BODY = ('twitter' in config && 'body' in config.twitter)
 const WORDPRESS_TITLE = ('wordpress' in config && 'title' in config.wordpress)
                          ? config.wordpress.title
                          : 'Meeting Minutes for {{gDate}}';
-// Location of date-based minutes folders; MUST end in a forward slash
-const MINUTES_BASE_URL = 'https://json-ld.github.io/minutes/'
-
-scrawl.minutes_base_url = MINUTES_BASE_URL;
 
 /************************* Utility Functions *********************************/
 function postToWordpress(username, password, content, callback) {
@@ -124,12 +128,12 @@ function postToWordpress(username, password, content, callback) {
   wpSummary = wpSummary.substring(
     wpSummary.indexOf('<dl>'), wpSummary.indexOf('</dl>') + 5);
   wpSummary = wpSummary.replace(/href=\"#/g,
-    'href="' + MINUTES_BASE_URL + gDate + '/#');
+    'href="' + scrawl.minutes_base_url + gDate + '/#');
   wpSummary = wpSummary.replace(/href=\"audio/g,
-    'href="' + MINUTES_BASE_URL + gDate + '/audio');
+    'href="' + scrawl.minutes_base_url + gDate + '/audio');
   wpSummary = wpSummary.replace(/<div><audio[\s\S]*\/audio><\/div>/g, '');
   wpSummary += '<p>Detailed minutes and recorded audio for this call are ' +
-    '<a href="' + MINUTES_BASE_URL + gDate +
+    '<a href="' + scrawl.minutes_base_url + gDate +
     '/">available in the archive</a>.</p>';
 
   // calculate the proper post date
