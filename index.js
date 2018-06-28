@@ -63,13 +63,15 @@ const minutesDir = path.join(dstDir, '/..');
 const partialsDir = ('partials' in config)
   ? path.join(base_dir, config.partials)
   : path.join(base_dir, 'www/_partials/');
+const peoplePath = ('people' in config)
+  ? path.join(base_dir, config.people)
+  : path.join(base_dir, 'www/people.json');
 
 var htmlHeader = fs.readFileSync(
   path.join(partialsDir, 'header.html'), {encoding: 'utf8'});
 var htmlFooter = fs.readFileSync(
   path.join(partialsDir, 'footer.html'), {encoding: 'utf8'});
-var peopleJson = fs.readFileSync(
-  path.join(base_dir, 'www/people.json'), {encoding: 'utf8'});
+var peopleJson = fs.readFileSync(peoplePath, {encoding: 'utf8'});
 var gLogData = '';
 var haveAudio = false;
 var gDate = path.basename(dstDir);
