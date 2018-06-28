@@ -102,7 +102,9 @@ const TWITTER_BODY = ('twitter' in config && 'body' in config.twitter)
 {{{minutes_base_url}}}{{gDate}}/`;
 
 // Mustache template - vars: gDate
-const WORDPRESS_TITLE = 'JSON-LD CG Meeting Minutes for {{gDate}}';
+const WORDPRESS_TITLE = ('wordpress' in config && 'title' in config.wordpress)
+                         ? config.wordpress.title
+                         : 'Meeting Minutes for {{gDate}}';
 // Location of date-based minutes folders; MUST end in a forward slash
 const MINUTES_BASE_URL = 'https://json-ld.github.io/minutes/'
 
