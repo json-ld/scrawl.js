@@ -78,24 +78,8 @@ var gDate = path.basename(dstDir);
 gDate = gDate.match(/([0-9]{4}-[0-9]{2}-[0-9]{2})/)[1];
 
 // configure scrawl
-scrawl.group = 'JSON-LD CG Telecon';
+scrawl.group = config.group || 'Telecon';
 scrawl.people = JSON.parse(peopleJson);
-
-const EMAIL_TO = 'JSON-LD CG <public-linked-json@w3.org>';
-const EMAIL_FROM = 'gregg@greggkellogg.net';
-// Mustache template -- vars: gDate
-const EMAIL_SUBJECT = '[MINUTES] W3C JSON-LD CG Call - {{gDate}} 12pm ET';
-// Mustache template -- vars: scribe, gDate, content
-const EMAIL_BODY = `Thanks to {{scribe}} for scribing this week! The minutes
-for this week's JSON-LD CG telecon are now available:
-
-https://json-ld.github.io/minutes/{{gDate}}/
-
-Full text of the discussion follows for W3C archival purposes.
-Audio from the meeting is available as well (link provided below).
-
-----------------------------------------------------------------
-{{{content}}}`;
 
 // Mustache template - vars: gDate, formattedItems, content
 const GPLUS_BODY = `*JSON-LD CG Meeting Summary for {{gDate}}*
@@ -353,11 +337,43 @@ async.waterfall([ function(callback) {
       console.log('scrawl: Sending new minutes email.');
     }
 
+    if (!('email' in config)) {
+      callback('Error: Email configuration is missing');
+      return;
+    } else if (!('from' in config.email) || !('to' in config.email)) {
+      callback('Error: You must supply a `to` and `from` config value');
+      return;
+    }
+
+    // see sendEmail()
+    // TODO: don't use global constants...
+    const EMAIL_TO = config.email.to;
+    const EMAIL_FROM = config.email.from;
+
+    // Mustache template -- vars: gDate
+    // TODO: dates are always Eastern Time...maybe the world is round?
+    // TODO: also the time is still hard coded T_T
+    const EMAIL_SUBJECT = config.email.subject || '[MINUTES] {{gDate}} 12pm ET';
+    // Mustache template -- vars: scribe, gDate, content, minutes_base_url, haveAudio
+    const EMAIL_BODY = config.email.body || `Thanks to {{scribe}} for scribing this week! The minutes
+for this week's telecon are now available:
+
+{{{minutes_base_url}}}{{gDate}}/
+
+Full text of the discussion follows for archival purposes.
+{{#haveAudio}}Audio from the meeting is available as well (link provided below).{{/haveAudio}}
+
+----------------------------------------------------------------
+{{{content}}}`;
+
     // generate the body of the email
     var content = scrawl.generateMinutes(gLogData, 'text', gDate, haveAudio);
     var scribe = content.match(/Scribe:\n\s(.*)\n/g)[0]
       .replace(/\n/g, '').replace('Scribe:  ', '');
-    content = Mustache.render(EMAIL_BODY, {scribe, gDate, content});
+    content = Mustache.render(EMAIL_BODY,
+                              {scribe, gDate, content,
+                                minutes_base_url: scrawl.minutes_base_url,
+                                haveAudio});
 
     if(process.env.SCRAWL_EMAIL_USERNAME && process.env.SCRAWL_EMAIL_PASSWORD &&
       process.env.SCRAWL_EMAIL_SERVER) {
