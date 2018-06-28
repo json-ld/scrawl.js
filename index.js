@@ -81,8 +81,10 @@ gDate = gDate.match(/([0-9]{4}-[0-9]{2}-[0-9]{2})/)[1];
 scrawl.group = config.group || 'Telecon';
 scrawl.people = JSON.parse(peopleJson);
 
-// Mustache template - vars: gDate, formattedItems, content
-const GPLUS_BODY = `*JSON-LD CG Meeting Summary for {{gDate}}*
+// Mustache template - vars: gDate, formattedItems, content, minutes_base_url
+const GPLUS_BODY = ('gplus' in config && 'body' in config.gplus)
+                    ? config.gplus.body
+                    : `*Meeting Summary for {{gDate}}*
 
 We discussed {{formattedItems}}.
 
@@ -90,9 +92,8 @@ We discussed {{formattedItems}}.
 
 Full transcript and audio logs are available here:
 
-https://json-ld.github.io/minutes/{{gDate}}/
-
-#w3c #json-ld`;
+{{{minutes_base_url}}}{{gDate}}/
+`;
 
 // Mustache template - vars: message, gDate
 const TWITTER_BODY = `JSON-LD CG discusses {{message}}:
@@ -438,7 +439,8 @@ Full text of the discussion follows for archival purposes.
     }
 
     // format in a way that is readable on G+
-    content = Mustache.render(GPLUS_BODY, {gDate, formattedItems, content});
+    content = Mustache.render(GPLUS_BODY, {gDate, formattedItems, content,
+                              minutes_base_url: scrawl.minutes_base_url});
 
     console.log('scrawl: You will need to paste this to your G+ stream:\n');
     console.log(content);
