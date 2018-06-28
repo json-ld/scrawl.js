@@ -6,7 +6,8 @@
     ],
     "homepage": "https://example.com/~person-nick"
   },
-  "Other Person": {
+  "Chair Person": {
+    "chair": true,
     "homepage": "http://example.com/~other-person"
   }
 }

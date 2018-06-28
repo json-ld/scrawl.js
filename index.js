@@ -89,6 +89,8 @@ const WORDPRESS_TITLE = 'JSON-LD CG Meeting Minutes for {{gDate}}';
 // Location of date-based minutes folders; MUST end in a forward slash
 const MINUTES_BASE_URL = 'https://json-ld.github.io/minutes/'
 
+scrawl.minutes_base_url = MINUTES_BASE_URL;
+
 /************************* Utility Functions *********************************/
 function postToWordpress(username, password, content, callback) {
   var client = wp.createClient({
