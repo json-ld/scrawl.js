@@ -60,10 +60,14 @@ const audioFile = path.resolve(dstDir, 'audio.ogg');
 const indexFile = path.resolve(dstDir, 'index.html');
 const minutesDir = path.join(dstDir, '/..');
 
+const partialsDir = ('partials' in config)
+  ? path.join(base_dir, config.partials)
+  : path.join(base_dir, 'www/_partials/');
+
 var htmlHeader = fs.readFileSync(
-  path.join(base_dir, 'www/_partials/header.html'), {encoding: 'utf8'});
+  path.join(partialsDir, 'header.html'), {encoding: 'utf8'});
 var htmlFooter = fs.readFileSync(
-  path.join(base_dir, 'www/_partials/footer.html'), {encoding: 'utf8'});
+  path.join(partialsDir, 'footer.html'), {encoding: 'utf8'});
 var peopleJson = fs.readFileSync(
   path.join(base_dir, 'www/people.json'), {encoding: 'utf8'});
 var gLogData = '';
