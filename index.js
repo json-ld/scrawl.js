@@ -95,9 +95,11 @@ Full transcript and audio logs are available here:
 {{{minutes_base_url}}}{{gDate}}/
 `;
 
-// Mustache template - vars: message, gDate
-const TWITTER_BODY = `JSON-LD CG discusses {{message}}:
-https://json-ld.github.io/minutes/{{gDate}}/ #w3c #json-ld`;
+// Mustache template - vars: group, message, gDate, minutes_base_url
+const TWITTER_BODY = ('twitter' in config && 'body' in config.twitter)
+                      ? config.twitter.body
+                      : `{{group}} discusses {{message}}:
+{{{minutes_base_url}}}{{gDate}}/`;
 
 // Mustache template - vars: gDate
 const WORDPRESS_TITLE = 'JSON-LD CG Meeting Minutes for {{gDate}}';
@@ -484,7 +486,9 @@ Full text of the discussion follows for archival purposes.
       }, function(err, results) {
         // construct the tweet
         var tweet = Mustache.render(TWITTER_BODY,
-                                    {message: results.message, gDate});
+                                    {group: scrawl.group,
+                                     message: results.message, gDate,
+                                     minutes_base_url: scrawl.minutes_base_url});
 
         // send the tweet
         twitter.updateStatus(tweet, function(data) {
