@@ -44,6 +44,11 @@
   scrawl.updateCounter = 1;
   scrawl.updateCounterTimeout = null;
 
+  // TODO: make it clearer what's internal only and what's configurable
+  // ...these happen to be configurable...
+  scrawl.minutes_base_url = '';
+  scrawl.chair = [];
+
   scrawl.wordwrap = function(str, width, brk, cut )
   {
     brk = brk || '\n';
@@ -737,7 +742,7 @@
       rval += 'Present:\n  ' +
         scrawl.wordwrap(peoplePresent, 65, '\n  ') + '\n';
       if(context.audio) {
-        rval += 'Audio:\n  https://json-ld.github.io/minutes/' +
+        rval += 'Audio:\n  ' + scrawl.minutes_base_url +
           time.getFullYear() + '-' +
            month + '-' + day + '/audio.ogg\n\n';
       } else {
@@ -757,11 +762,17 @@
     var aliases = scrawl.generateAliases();
     scrawl.counter = 0;
 
+    // TODO: expose this better?
+    // TODO: return objects so we can link things
+    var chair = Object.keys(scrawl.people).filter((key) => {
+      return 'chair' in scrawl.people[key] && scrawl.people[key].chair;
+    });
+
     // initialize the IRC log scanning context
     var context =
     {
       'group': scrawl.group,
-      'chair': ['Gregg Kellogg', 'Rob Sanderson'],
+      'chair': chair,
       'present': {},
       'scribe': [],
       'topics': [],
