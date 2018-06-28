@@ -1,3 +1,4 @@
 node_modules/
+config.yaml
 people.json
 publish.sh
