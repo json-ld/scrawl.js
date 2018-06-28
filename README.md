@@ -28,20 +28,11 @@ Scrawl works on directories structured like:
 The output files will be added to the same directory for simpler hosting of
 all the things.
 
-Now, we need to setup the nicknames of all the people in the group.
-So, copy `people.json.example` to `www/people.json` and fill in names,
-homepages, and nicknames as needed.
+There are **two** important setup files:
+ - `config.yaml` (see `config.yaml.example`)
+ - `people.json` (see `people.json.example`)
 
-To edit logs in a Web page, it's recommended to install the `http-server` node
-package and use that (for now):
-
-```sh
-$ npm i -g http-server
-$ http-server www/
-```
-
-Once that's done, you can visit `http://localhost:8080/` to paste IRC logs, see
-the output, and copy/paste the HTML (etc) wherever you need it.
+Once those two files are configured to your contentment, see below.
 
 ## Command Line Usage
 
@@ -95,6 +86,21 @@ There are several more options available.
 The WordPress, Google, and Twitter related switches also require some custom
 environment variables to be setup. For examples of those, see the
 [publish.sh.example](publish.sh.example).
+
+## Web-based editor
+
+You can edit logs in a small Web app. To do so, it's recommended to install the
+`http-server` node package and use that (for now):
+
+```sh
+$ npm i -g http-server
+$ http-server www/
+```
+
+Once that's done, you can visit `http://localhost:8080/` to paste IRC logs, see
+the output, and copy/paste the HTML (etc) wherever you need it.
+
+For this to work you'll need to put `people.json` in your `www/` folder.
 
 ## Wrapping bash scripts
 
