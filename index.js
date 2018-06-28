@@ -10,21 +10,45 @@ const Mustache = require('mustache');
 var scrawl = require('./www/scrawl');
 var Twitter = require('twitter');
 var wp = require('wordpress');
+const yaml = require('js-yaml');
 
 program
   .version('0.4.0')
+  // the setup switches
+  .option('-c, --config <file>', 'The YAML configuration file.')
   .option('-d, --directory <directory>', 'The directory to process.')
+  // the do something switches
   .option('-m, --html', 'If set, write the minutes to an index.html file')
   .option('-w, --wordpress', 'If set, publish the minutes to the blog')
   .option('-e, --email', 'If set, publish the minutes to the mailing list')
   .option('-t, --twitter', 'If set, publish the minutes to Twitter')
   .option('-g, --google', 'If set, publish the minutes to G+')
   .option('-i, --index', 'Build meeting index')
+  // the tweak the cli switch
   .option('-q, --quiet', 'Don\'t print status information to the console')
   .parse(process.argv);
 
+var base_dir = __dirname;
+var config = {};
+if (program.config) {
+  try {
+    config = yaml.safeLoad(fs.readFileSync(program.config, 'utf8'));
+    // paths in the config file are relative to the config files location
+    base_dir = path.resolve(path.dirname(program.config));
+  } catch (e) {
+    console.error(e.message);
+  }
+}
+
 if(!program.directory) {
   console.error('Error: You must specify a directory to process');
+  program.outputHelp();
+  process.exit(1);
+}
+
+if (!program.html && !program.wordpress && !program.email && !program.twitter
+    && !program.google && !program.index) {
+  console.error('Error: Nothing to do...');
   program.outputHelp();
   process.exit(1);
 }
@@ -37,11 +61,11 @@ const indexFile = path.resolve(dstDir, 'index.html');
 const minutesDir = path.join(dstDir, '/..');
 
 var htmlHeader = fs.readFileSync(
-  __dirname + '/www/_partials/header.html', {encoding: 'utf8'});
+  path.join(base_dir, 'www/_partials/header.html'), {encoding: 'utf8'});
 var htmlFooter = fs.readFileSync(
-  __dirname + '/www/_partials/footer.html', {encoding: 'utf8'});
+  path.join(base_dir, 'www/_partials/footer.html'), {encoding: 'utf8'});
 var peopleJson = fs.readFileSync(
-  __dirname + '/www/people.json', {encoding: 'utf8'});
+  path.join(base_dir, 'www/people.json'), {encoding: 'utf8'});
 var gLogData = '';
 var haveAudio = false;
 var gDate = path.basename(dstDir);
@@ -277,7 +301,7 @@ async.waterfall([ function(callback) {
       }
 
       const summaryIntro = fs.readFileSync(
-        __dirname + '/www/_partials/summary-intro.html', {encoding: 'utf8'});
+        path.join(base_dir, 'www/_partials/summary-intro.html'), {encoding: 'utf8'});
 
       // write out summary file
       var summaryHtml = htmlHeader + '<div id="info">' + summaryIntro;
