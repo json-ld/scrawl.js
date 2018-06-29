@@ -62,10 +62,10 @@ const minutesDir = path.join(dstDir, '/..');
 
 const partialsDir = ('partials' in config)
   ? path.join(base_dir, config.partials)
-  : path.join(base_dir, 'www/_partials/');
+  : path.join(__dirname, 'www/_partials/');
 const peoplePath = ('people' in config)
   ? path.join(base_dir, config.people)
-  : path.join(base_dir, 'www/people.json');
+  : path.join(__dirname, 'www/people.json');
 
 var htmlHeader = fs.readFileSync(
   path.join(partialsDir, 'header.html'), {encoding: 'utf8'});
@@ -300,7 +300,7 @@ async.waterfall([ function(callback) {
       }
 
       const summaryIntro = fs.readFileSync(
-        path.join(base_dir, 'www/_partials/summary-intro.html'), {encoding: 'utf8'});
+        path.join(partialsDir, 'summary-intro.html'), {encoding: 'utf8'});
 
       // write out summary file
       var summaryHtml = htmlHeader + '<div id="info">' + summaryIntro;
