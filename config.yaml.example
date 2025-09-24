@@ -25,17 +25,3 @@ email: # required for -e
 
     ----------------------------------------------------------------
     {{{content}}}
-gplus: # required for -g
-  # Mustache template - vars: content, formattedItems, gDate, minutes_base_url
-  body: |-
-    *JSON-LD CG Meeting Summary for {{gDate}}*
-
-    We discussed {{formattedItems}}.
-
-    {{{content}}}
-
-    Full transcript and audio logs are available here:
-
-    {{{minutes_base_url}}}{{gDate}}/
-
-    #w3c #json-ld
