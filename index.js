@@ -13,7 +13,7 @@ var wp = require('wordpress');
 const yaml = require('js-yaml');
 
 program
-  .version('0.4.0')
+  .version('0.5.0')
   // the setup switches
   .option('-c, --config <file>', 'The YAML configuration file.')
   .option('-d, --directory <directory>', 'The directory to process.')
