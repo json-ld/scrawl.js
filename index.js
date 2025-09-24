@@ -190,7 +190,12 @@ async.waterfall([ function(callback) {
               topic: [],
               resolution: []
             };
-            summary.topic = data.match(/topic: (.*)/ig);
+            if(data.search(/agendum \d+\s+\-\- (.*) \-\-/i)) {
+              summary.topic = data.match(/agendum \d+\s+\-\- (.*) \-\-/i);
+            } else if(data.search(/(?<!sub)topic: (.*)/ig)) {
+              summary.topic = data.match(/(?<!sub)topic: (.*)/ig);
+            }
+            summary.topic = data.match(/(?<!sub)topic: (.*)/ig);
             summary.resolution = data.match(/resolved: (.*)/ig);
 
             // strip extraneous information
