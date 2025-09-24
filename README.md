@@ -74,7 +74,6 @@ There are several more options available.
     -V, --version                output the version number
     -d, --directory <directory>  The directory to process.
     -m, --html                   If set, write the minutes to an index.html file
-    -w, --wordpress              If set, publish the minutes to the blog
     -e, --email                  If set, publish the minutes to the mailing list
     -t, --twitter                If set, publish the minutes to Twitter
     -g, --google                 If set, publish the minutes to G+
@@ -83,7 +82,7 @@ There are several more options available.
 
 ```
 
-The WordPress, Google, and Twitter related switches also require some custom
+The Google and Twitter related switches also require some custom
 environment variables to be setup. For examples of those, see the
 [publish.sh.example](publish.sh.example).
 

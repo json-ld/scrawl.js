@@ -28,7 +28,6 @@
     "moment": "~2.19.3",
     "mustache": "^2.3.0",
     "prompt": "^1.0.0",
-    "twitter": "~0.2.5",
-    "wordpress": "~1.4.1"
+    "twitter": "~0.2.5"
   }
 }

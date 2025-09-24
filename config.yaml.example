@@ -44,6 +44,3 @@ twitter: # required for -t
   body: |-
     JSON-LD CG discusses {{message}}:
     {{{minutes_base_url}}}{{gDate}}/ #w3c #json-ld
-wordpress: # required for -w
-  # Mustache template - vars: gDate
-  title: "JSON-LD CG Meeting Minutes for {{gDate}}"
