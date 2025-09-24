@@ -106,6 +106,18 @@ in the `scripts/` folder. To configure them, copy the `publishing.example.cfg`
 to `publishing.cfg`, make your changes, and then run the scripts (which wrap
 the node code).
 
+## Modifying IRC logs
+
+If there are corrections to `irc.log` needed, do not make them directly, but
+instead create a `changes.log` file and add "fake" IRC log entries for any
+corrections/additions.
+
+```irc
+00:00:00 <bigbluehat> scribe+
+```
+
+These will be appended to the end of `irc.log` and processed alongside the rest.
+
 ## Development
 
 During development, you'll want to test with the working copy version of
