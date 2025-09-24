@@ -49,6 +49,7 @@ if (!program.html && !program.email && !program.index) {
 // setup global variables
 const dstDir = path.resolve(path.join(program.directory));
 const logFile = path.resolve(dstDir, 'irc.log');
+const changesLogFile = path.resolve(dstDir, 'changes.log');
 const audioFile = path.resolve(dstDir, 'audio.ogg');
 const indexFile = path.resolve(dstDir, 'index.html');
 const minutesDir = path.join(dstDir, '/..');
@@ -130,7 +131,15 @@ async.waterfall([ function(callback) {
   });
 }, function(callback) {
   // read the IRC log file
-  fs.readFile(logFile, 'utf8', callback);
+  let log = fs.readFileSync(logFile, 'utf8');
+  // read the changes log file if it exists
+  try {
+    log += '\n';
+    log += fs.readFileSync(changesLogFile, 'utf8');
+  } catch(e) {
+    // ignore if the file doesn't exist
+  }
+  callback(null, log);
 }, function(data, callback) {
   gLogData = data;
   // generate the index.html file
