@@ -7,7 +7,6 @@ var path = require('path');
 var program = require('commander');
 const Mustache = require('mustache');
 var scrawl = require('./www/scrawl');
-var Twitter = require('twitter');
 const yaml = require('js-yaml');
 
 program
@@ -18,7 +17,6 @@ program
   // the do something switches
   .option('-m, --html', 'If set, write the minutes to an index.html file')
   .option('-e, --email', 'If set, publish the minutes to the mailing list')
-  .option('-t, --twitter', 'If set, publish the minutes to Twitter')
   .option('-g, --google', 'If set, publish the minutes to G+')
   .option('-i, --index', 'Build meeting index')
   // the tweak the cli switch
@@ -43,8 +41,7 @@ if(!program.directory) {
   process.exit(1);
 }
 
-if (!program.html && !program.email && !program.twitter
-    && !program.google && !program.index) {
+if (!program.html && !program.email && !program.google && !program.index) {
   console.error('Error: Nothing to do...');
   program.outputHelp();
   process.exit(1);
@@ -393,55 +390,6 @@ Full text of the discussion follows for archival purposes.
     console.log('scrawl: You will need to paste this to your G+ stream:\n');
     console.log(content);
     callback();
-  } else {
-    callback();
-  }
-}, function(callback) {
-  // publish the minutes to Twitter
-  if(program.twitter) {
-    if(!process.env.SCRAWL_TWITTER_CONSUMER_KEY ||
-      !process.env.SCRAWL_TWITTER_SECRET ||
-      !process.env.SCRAWL_TWITTER_TOKEN_KEY ||
-      !process.env.SCRAWL_TWITTER_TOKEN_SECRET) {
-      console.log('scrawl: You must set the following environment variables ' +
-        'for twitter\nposting to work: SCRAWL_TWITTER_CONSUMER_KEY, ' +
-        'SCRAWL_TWITTER_SECRET,\nSCRAWL_TWITTER_TOKEN_KEY, ' +
-        'SCRAWL_TWITTER_TOKEN_SECRET.');
-      return callback();
-    }
-    // create the twitter client
-    var twitter = new Twitter({
-      consumer_key: process.env.SCRAWL_TWITTER_CONSUMER_KEY,
-      consumer_secret: process.env.SCRAWL_TWITTER_SECRET,
-      access_token_key: process.env.SCRAWL_TWITTER_TOKEN_KEY,
-      access_token_secret: process.env.SCRAWL_TWITTER_TOKEN_SECRET
-    });
-
-    // get the tweet text
-    console.log('scrawl: Creating new tweet.');
-    var prompt = require('prompt');
-      prompt.start();
-      prompt.get({
-        properties: {
-          message: {
-            description: 'Enter the tweet contents (what was discussed)',
-            pattern: /^.{4,100}$/,
-            message: 'The message must be between 4-100 characters.'
-          }
-        }
-      }, function(err, results) {
-        // construct the tweet
-        var tweet = Mustache.render(TWITTER_BODY,
-                                    {group: scrawl.group,
-                                     message: results.message, gDate,
-                                     minutes_base_url: scrawl.minutes_base_url});
-
-        // send the tweet
-        twitter.updateStatus(tweet, function(data) {
-          console.log('scrawl: Tweet sent:', data.text);
-          callback();
-        });
-      });
   } else {
     callback();
   }

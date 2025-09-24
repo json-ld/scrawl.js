@@ -39,8 +39,3 @@ gplus: # required for -g
     {{{minutes_base_url}}}{{gDate}}/
 
     #w3c #json-ld
-twitter: # required for -t
-  # Mustache template - vars: group, message, gDate, minutes_base_url
-  body: |-
-    JSON-LD CG discusses {{message}}:
-    {{{minutes_base_url}}}{{gDate}}/ #w3c #json-ld
