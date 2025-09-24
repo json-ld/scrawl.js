@@ -5,32 +5,32 @@
  */
 (function() {
   /* Standard regular expressions to use when matching lines */
-  var commentRx = /^\[?(\S*|\w+ \S+)\]\s+<([^>]*)>\s+(.*)$/;
-  var scribeRx = /^(scribe|scribenick):.*$/i;
-  var meetingRx = /^meeting:\s(.*)$/i;
-  var totalPresentRx = /^total present:\s(.*)$/i;
-  var dateRx = /^date:\s(.*)$/i;
-  var chairRx = /^chair:.*$/i;
-  var audioRx = /^audio:\s?(.*)$/i;
-  var proposalRx = /^(proposal|proposed):.*$/i;
-  var presentRx = /^present[:+](.*)$/i;
-  var resolutionRx = /^(resolution|resolved): ?(.*)$/i;
-  var useCaseRx = /^(use case|usecase):\s?(.*)$/i;
-  var topicRx = /^topic:\s*(.*)$/i;
-  var actionRx = /^action:\s*(.*)$/i;
-  var voipRx = /^voip.*$/i;
-  var toVoipRx = /^voip.{0,4}:.*$/i;
-  var rrsAgentRx = /^RRSAgent.*$/i;
-  var queueRx = /^q[+-?]\s.*|^q[+-?].*|^ack\s+.*|^ack$/i;
-  var voteRx = /^[+-][01]\s.*|[+-][01]$/i;
-  var agendaRx = /^agenda:\s*((https?):.*)$/i;
-  var urlRx = /((ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?)/;
+  const commentRx = /^\[?(\S*|\w+ \S+)\]\s+<([^>]*)>\s+(.*)$/;
+  const scribeRx = /^(scribe|scribenick):.*$/i;
+  const meetingRx = /^meeting:\s(.*)$/i;
+  const totalPresentRx = /^total present:\s(.*)$/i;
+  const dateRx = /^date:\s(.*)$/i;
+  const chairRx = /^chair:.*$/i;
+  const audioRx = /^audio:\s?(.*)$/i;
+  const proposalRx = /^(proposal|proposed):.*$/i;
+  const presentRx = /^present[:+](.*)$/i;
+  const resolutionRx = /^(resolution|resolved): ?(.*)$/i;
+  const useCaseRx = /^(use case|usecase):\s?(.*)$/i;
+  const topicRx = /^topic:\s*(.*)$/i;
+  const actionRx = /^action:\s*(.*)$/i;
+  const voipRx = /^voip.*$/i;
+  const toVoipRx = /^voip.{0,4}:.*$/i;
+  const rrsAgentRx = /^RRSAgent.*$/i;
+  const queueRx = /^q[+-?]\s.*|^q[+-?].*|^ack\s+.*|^ack$/i;
+  const voteRx = /^[+-][01]\s.*|[+-][01]$/i;
+  const agendaRx = /^agenda:\s*((https?):.*)$/i;
+  const urlRx = /((ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?)/;
 
   // Compatability code to make this work in both node.js and the browser
-  var scrawl = {};
-  var nodejs = false;
+  const scrawl = {};
+  let nodejs = false;
   if(typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    var Entities = require('html-entities').XmlEntities;
+    const Entities = require('html-entities').XmlEntities;
     var entities = new Entities();
     module.exports = scrawl;
     nodejs = true;
@@ -57,7 +57,7 @@
 
     if (!str) { return str; }
 
-    var regex = '.{1,' + width + '}(\\s|$)' +
+    const regex = '.{1,' + width + '}(\\s|$)' +
       (cut ? '|.{' +width+ '}|.+$' : '|\\S+?(\\s|$)');
 
     return str.match(new RegExp(regex, 'g')).join(brk);
@@ -65,11 +65,11 @@
 
   scrawl.generateAliases = function()
   {
-    var rval = {};
+    const rval = {};
 
-    for(var p in scrawl.people)
+    for(const p in scrawl.people)
     {
-      var person = scrawl.people[p];
+      const person = scrawl.people[p];
       var names = p.split(' ');
 
       // append any aliases to the list of known names
@@ -79,10 +79,9 @@
       }
 
       // Add the aliases and names if they don't already exist in the aliases
-      for(var n in names)
+      for(const n in names)
       {
-        var alias = names[n];
-        alias = alias.toLowerCase();
+        const alias = names[n].toLowerCase();
         if(alias.length > 2 && !(alias in rval))
         {
           rval[alias] = p;
@@ -95,7 +94,7 @@
 
   scrawl.htmlencode = function(text)
   {
-    var modified = '';
+    let modified;
 
     if(nodejs) {
       modified = entities.encodeNonUTF(text);
@@ -111,7 +110,7 @@
 
   scrawl.topic = function(msg, id, textMode)
   {
-    var rval = '';
+    let rval = '';
 
     if(textMode === 'html')
     {
@@ -128,7 +127,7 @@
 
   scrawl.action = function(msg, id, textMode)
   {
-    var rval = '';
+    let rval = '';
 
     if(textMode === 'html')
     {
@@ -145,7 +144,7 @@
 
   scrawl.information = function(msg, textMode)
   {
-    var rval = '';
+    let rval = '';
 
     if(textMode === 'html')
     {
@@ -162,7 +161,7 @@
 
   scrawl.proposal = function(msg, textMode)
   {
-    var rval = '';
+    let rval = '';
 
     if(textMode === 'html')
     {
@@ -180,7 +179,7 @@
 
   scrawl.resolution = function(msg, id, textMode)
   {
-    var rval = '';
+    let rval = '';
 
     if(textMode === 'html')
     {
@@ -199,7 +198,7 @@
 
   scrawl.usecase = function(msg, textMode)
   {
-    var rval = '';
+    let rval = '';
 
     if(textMode === 'html')
     {
@@ -218,7 +217,7 @@
 
   scrawl.scribe = function(msg, textMode, person, assist)
   {
-    var rval = '';
+    let rval = '';
 
     // capitalize the first letter of the message if it doesn't start with http
     if(!(/^(\s)*https?:\/\//.test(msg))) {
@@ -273,7 +272,7 @@
 
   scrawl.scribeContinuation = function(msg, textMode)
   {
-    var rval = '';
+    let rval = '';
 
     if(textMode === 'html')
     {
@@ -298,7 +297,7 @@
 
   scrawl.error = function(msg, textMode)
   {
-    var rval = '';
+    let rval = '';
 
     if(textMode === 'html')
     {
@@ -323,19 +322,18 @@
 
   scrawl.processLine = function(context, aliases, line, textMode)
   {
-     var rval = '';
-     var match = commentRx.exec(line);
+     let rval = '';
+     const match = commentRx.exec(line);
 
      if(match)
      {
-       var time = match[1];
-       var nick = match[2].toLowerCase();
-       var msg = match[3];
+       const nick = match[2].toLowerCase();
+       const msg = match[3];
 
        // check for a scribe line
        if(msg.search(scribeRx) !== -1)
        {
-         var scribe = msg.split(':')[1].replace(' ', '');
+         const scribe = msg.split(':')[1].replace(' ', '');
          scribe = scribe.toLowerCase();
          if(scribe in aliases)
          {
@@ -356,8 +354,8 @@
          var chairs = msg.split(':')[1].split(',');
 
          context.chair = [];
-         for(var i = 0; i < chairs.length; i++) {
-           var chair = chairs[i].replace(' ', '').toLowerCase();
+         for(let i = 0; i < chairs.length; i++) {
+           const chair = chairs[i].replace(' ', '').toLowerCase();
            if(chair in aliases)
            {
               context.chair.push(aliases[chair]);
@@ -368,23 +366,23 @@
        // check for meeting line
        else if(msg.search(meetingRx) !== -1)
        {
-         var meeting = msg.match(meetingRx)[1];
+         const meeting = msg.match(meetingRx)[1];
          context.group = meeting;
        }
        // check for present line
        else if(msg.search(presentRx) !== -1)
        {
-          var present = msg.match(presentRx)[1].toLowerCase();
-          var people = present.split(',');
+          const present = msg.match(presentRx)[1].toLowerCase();
+          const people = present.split(',');
 
           // try to find the person by full name, last name, and then first name
-          for(var i = 0; i < people.length; i++) {
+          for(let i = 0; i < people.length; i++) {
             if (!people[i]) {
               scrawl.present(context, aliases[nick]);
             } else {
-              var person = people[i].replace(/^\s/, '').replace(/\s$/, '');
-              var lastName = person.split(' ')[1];
-              var firstName = person.split(' ')[0];
+              const person = people[i].replace(/^\s/, '').replace(/\s$/, '');
+              const lastName = person.split(' ')[1];
+              const firstName = person.split(' ')[0];
               if(person in aliases) {
                 scrawl.present(context, aliases[person]);
               } else if(lastName in aliases) {
@@ -403,39 +401,39 @@
        // check for date line
        else if(msg.search(dateRx) !== -1)
        {
-         var date = msg.match(dateRx)[1];
+         const date = msg.match(dateRx)[1];
          context.date = new Date(date);
        }
        // check for topic line
        else if(msg.search(topicRx) !== -1)
        {
-         var topic = msg.match(topicRx)[1];
+         const topic = msg.match(topicRx)[1];
          context.topics = context.topics.concat(topic);
          rval = scrawl.topic(topic, context.topics.length, textMode);
        }
        // check for action line
        else if(msg.search(actionRx) !== -1)
        {
-         var action = msg.match(actionRx)[1];
+         const action = msg.match(actionRx)[1];
          context.actions = context.actions.concat(action);
          rval = scrawl.action(action, context.actions.length, textMode);
        }
        // check for Agenda line
        else if(msg.search(agendaRx) !== -1)
        {
-         var agenda = msg.match(agendaRx)[1];
+         const agenda = msg.match(agendaRx)[1];
          context.agenda = agenda;
        }
        // check for proposal line
        else if(msg.search(proposalRx) !== -1)
        {
-         var proposal = msg.split(':')[1];
+         const proposal = msg.split(':')[1];
          rval = scrawl.proposal(proposal, textMode);
        }
        // check for resolution line
        else if(msg.search(resolutionRx) !== -1)
        {
-         var resolution = msg.match(resolutionRx)[2];
+         const resolution = msg.match(resolutionRx)[2];
          context.resolutions = context.resolutions.concat(resolution);
          rval = scrawl.resolution(
            resolution, context.resolutions.length, textMode);
@@ -443,7 +441,7 @@
        // check for use case line
        else if(msg.search(useCaseRx) !== -1)
        {
-         var usecase = msg.match(useCaseRx)[2];
+         const usecase = msg.match(useCaseRx)[2];
          rval = scrawl.usecase(usecase, textMode);
        }
        else if(msg.search(totalPresentRx) !== -1)
@@ -478,13 +476,13 @@
          }
          else if(msg.indexOf(':') !== -1)
          {
-           var alias = msg.split(':', 1)[0].replace(' ', '').toLowerCase();
+           const alias = msg.split(':', 1)[0].replace(' ', '').toLowerCase();
 
            if(alias in aliases)
            {
               // the line is a comment made by somebody else that was
               // scribed
-              var cleanedMessage = msg.split(':').splice(1).join(':');
+              const cleanedMessage = msg.split(':').splice(1).join(':');
 
               scrawl.present(context, aliases[alias]);
               rval = scrawl.scribe(
@@ -508,12 +506,12 @@
        {
          if(msg.indexOf(':') !== -1)
          {
-           var alias = msg.split(':', 1)[0].replace(' ', '').toLowerCase();
+           const alias = msg.split(':', 1)[0].replace(' ', '').toLowerCase();
 
            if(alias in aliases)
            {
               // the line is a scribe assist
-              var cleanedMessage = msg.split(':').splice(1).join(':');
+              const cleanedMessage = msg.split(':').splice(1).join(':');
 
               scrawl.present(context, aliases[alias]);
               rval = scrawl.scribe(cleanedMessage, textMode,
@@ -558,25 +556,25 @@
 
   scrawl.generateSummary = function(context, textMode)
   {
-    var rval = '';
-    var time = context.date || new Date();
-    var month = '' + (time.getMonth() + 1)
-    var day = '' + time.getDate()
-    var group = context.group;
-    var agenda = context.agenda;
-    var audio = 'audio.ogg';
-    var chair = context.chair;
-    var scribe = context.scribe.filter(function(item, i, arr) { 
+    let rval = '';
+    let time = context.date || new Date();
+    let month = '' + (time.getMonth() + 1)
+    let day = '' + time.getDate()
+    const group = context.group;
+    const agenda = context.agenda;
+    const audio = 'audio.ogg';
+    const chair = context.chair;
+    const scribe = context.scribe.filter(function(item, i, arr) { 
       return arr.indexOf(item) === i; 
     });
-    var topics = context.topics;
-    var resolutions = context.resolutions;
-    var actions = context.actions;
-    var present = [];
+    const topics = context.topics;
+    const resolutions = context.resolutions;
+    const actions = context.actions;
+    const present = [];
 
     // build the list of people present
-    for(var name in context.present) {
-      var person = scrawl.people[name]
+    for(const name in context.present) {
+      const person = scrawl.people[name]
       person['name'] = name;
       present.push(person)
     }
@@ -613,7 +611,7 @@
         rval += '<dt>Topics</dt><dd><ol>';
         for(i in topics)
         {
-          var topicNumber = parseInt(i) + 1;
+          const topicNumber = parseInt(i) + 1;
           rval += '<li><a href="#topic-' + topicNumber + '">' +
             topics[i] + '</a>';
         }
@@ -625,7 +623,7 @@
         rval += '<dt>Resolutions</dt><dd><ol>';
         for(i in resolutions)
         {
-          var resolutionNumber = parseInt(i) + 1;
+          const resolutionNumber = parseInt(i) + 1;
           rval += '<li><a href="#resolution-' + resolutionNumber + '">' +
             resolutions[i] + '</a>';
         }
@@ -637,7 +635,7 @@
         rval += '<dt>Action Items</dt><dd><ol>';
         for(i in actions)
         {
-          var actionNumber = parseInt(i) + 1;
+          const actionNumber = parseInt(i) + 1;
           rval += '<li><a href="#action-' + actionNumber + '">' +
             actions[i] + '</a>';
         }
@@ -645,9 +643,9 @@
       }
 
       // generate the list of people present
-      var peoplePresent = ''
-      for(var i = 0; i < present.length; i++) {
-        var person = present[i];
+      let peoplePresent = ''
+      for(let i = 0; i < present.length; i++) {
+        const person = present[i];
 
         if(i > 0) {
           peoplePresent += ', ';
@@ -682,8 +680,8 @@
     else
     {
       // generate the list of people present
-      var peoplePresent = ''
-      for(var i = 0; i < present.length; i++) {
+      let peoplePresent = ''
+      for(let i = 0; i < present.length; i++) {
         var person = present[i];
 
         if(i > 0) {
@@ -706,7 +704,7 @@
         rval += 'Topics:\n';
         for(i in topics)
         {
-          var topicNumber = parseInt(i) + 1;
+          const topicNumber = parseInt(i) + 1;
           rval += scrawl.wordwrap(
             '  ' + topicNumber + '. ' + topics[i], 65,
             '\n    ') + '\n';
@@ -718,7 +716,7 @@
         rval += 'Resolutions:\n';
         for(i in resolutions)
         {
-          var resolutionNumber = parseInt(i) + 1;
+          const resolutionNumber = parseInt(i) + 1;
           rval += scrawl.wordwrap(
             '  ' + resolutionNumber + '. ' + resolutions[i], 65,
             '\n    ') + '\n';
@@ -730,7 +728,7 @@
         rval += 'Action Items:\n';
         for(i in actions)
         {
-          var actionNumber = parseInt(i) + 1;
+          const actionNumber = parseInt(i) + 1;
           rval += scrawl.wordwrap(
             '  ' + actionNumber + '. ' + actions[i], 65,
             '\n    ') + '\n';
@@ -755,11 +753,9 @@
 
   scrawl.generateMinutes = function(ircLog, textMode, date, haveAudio)
   {
-    var rval = '';
-    var minutes = '';
-    var summary = '';
-    var ircLines = ircLog.split(/\r?\n/);
-    var aliases = scrawl.generateAliases();
+    let minutes = '';
+    const ircLines = ircLog.split(/\r?\n/);
+    const aliases = scrawl.generateAliases();
     scrawl.counter = 0;
 
     // TODO: expose this better?
@@ -794,14 +790,12 @@
     }
 
     // generate the meeting summary
-    summary = scrawl.generateSummary(context, textMode);
+    const summary = scrawl.generateSummary(context, textMode);
 
     // fix spacing around proposals, actions, and resolutions
     minutes = minutes.replace(/\n\n\n/gm, '\n\n');
 
     // create the final log output
-    rval = summary + minutes;
-
-    return rval;
+    return summary + minutes;
   }
 })();
