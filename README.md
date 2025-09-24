@@ -29,8 +29,8 @@ The output files will be added to the same directory for simpler hosting of
 all the things.
 
 There are **two** important setup files:
- - `config.yaml` (see `config.yaml.example`)
- - `people.json` (see `people.json.example`)
+ - `config.yaml` (see `config.example.yaml`)
+ - `people.json` (see `people.example.json`)
 
 Once those two files are configured to your contentment, see below.
 
@@ -82,7 +82,7 @@ There are several more options available.
 
 Please note, there are custom environment variables which may need to be setup.
 For examples of those, see the
-[publish.sh.example](publish.sh.example).
+[publish.example.sh](publish.example.sh).
 
 ## Web-based editor
 
@@ -102,7 +102,7 @@ For this to work you'll need to put `people.json` in your `www/` folder.
 ## Wrapping bash scripts
 
 If you're on a machine that has bash available, there are a couple useful tools
-in the `scripts/` folder. To configure them, copy the `publishing.cfg.example`
+in the `scripts/` folder. To configure them, copy the `publishing.example.cfg`
 to `publishing.cfg`, make your changes, and then run the scripts (which wrap
 the node code).
 
