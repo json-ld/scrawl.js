@@ -8,7 +8,6 @@ var program = require('commander');
 const Mustache = require('mustache');
 var scrawl = require('./www/scrawl');
 var Twitter = require('twitter');
-var wp = require('wordpress');
 const yaml = require('js-yaml');
 
 program
@@ -18,7 +17,6 @@ program
   .option('-d, --directory <directory>', 'The directory to process.')
   // the do something switches
   .option('-m, --html', 'If set, write the minutes to an index.html file')
-  .option('-w, --wordpress', 'If set, publish the minutes to the blog')
   .option('-e, --email', 'If set, publish the minutes to the mailing list')
   .option('-t, --twitter', 'If set, publish the minutes to Twitter')
   .option('-g, --google', 'If set, publish the minutes to G+')
@@ -45,7 +43,7 @@ if(!program.directory) {
   process.exit(1);
 }
 
-if (!program.html && !program.wordpress && !program.email && !program.twitter
+if (!program.html && !program.email && !program.twitter
     && !program.google && !program.index) {
   console.error('Error: Nothing to do...');
   program.outputHelp();
@@ -108,64 +106,7 @@ const TWITTER_BODY = ('twitter' in config && 'body' in config.twitter)
                       : `{{group}} discusses {{message}}:
 {{{minutes_base_url}}}{{gDate}}/`;
 
-// Mustache template - vars: gDate
-const WORDPRESS_TITLE = ('wordpress' in config && 'title' in config.wordpress)
-                         ? config.wordpress.title
-                         : 'Meeting Minutes for {{gDate}}';
-
 /************************* Utility Functions *********************************/
-function postToWordpress(username, password, content, callback) {
-  var client = wp.createClient({
-    username: username,
-    password: password,
-    url: ''
-  });
-  // Re-format the HTML for publication to a Wordpress blog
-  var datetime = new Date(gDate);
-  datetime.setHours(37);
-  var wpSummary = content.post_content;
-  wpSummary = wpSummary.substring(
-    wpSummary.indexOf('<dl>'), wpSummary.indexOf('</dl>') + 5);
-  wpSummary = wpSummary.replace(/href=\"#/g,
-    'href="' + scrawl.minutes_base_url + gDate + '/#');
-  wpSummary = wpSummary.replace(/href=\"audio/g,
-    'href="' + scrawl.minutes_base_url + gDate + '/audio');
-  wpSummary = wpSummary.replace(/<div><audio[\s\S]*\/audio><\/div>/g, '');
-  wpSummary += '<p>Detailed minutes and recorded audio for this call are ' +
-    '<a href="' + scrawl.minutes_base_url + gDate +
-    '/">available in the archive</a>.</p>';
-
-  // calculate the proper post date
-  var gmtDate = datetime.toISOString();
-  gmtDate = gmtDate.replace('T', ' ');
-  gmtDate = gmtDate.replace(/\.[0-9]*Z/, '');
-
-  content.post_content = wpSummary;
-  content.post_date_gmt = gmtDate;
-  content.terms_names = ['Meetings'];
-  content.post_name = gDate + '-minutes';
-  content.custom_fields = [{
-    s2_meta_field: 'no'
-  }];
-
-  client.newPost(content, function(err, data) {
-    if(err) {
-      console.log(err);
-
-      console.log('scrawl: You may have to add this information manually:');
-
-      console.log('Title:\n' + content.post_title);
-      console.log('Content:\n' + content.post_content);
-      console.log('Slug:\n' + content.post_name);
-    }
-    else {
-      console.log(data);
-      // Do something.
-    }
-    callback();
-  });
-}
-
 function sendEmail(username, password, hostname, content, callback) {
   var server  = email.server.connect({
     //user: username,
@@ -501,47 +442,6 @@ Full text of the discussion follows for archival purposes.
           callback();
         });
       });
-  } else {
-    callback();
-  }
-}, function(callback) {
-  // publish the wordpress blog post
-  if(program.wordpress) {
-    if(!program.quiet) {
-      console.log('scrawl: Creating new blog post.');
-    }
-    var content = {
-      post_title: Mustache.render(WORDPRESS_TITLE, {gDate}),
-      post_content: scrawl.generateMinutes(gLogData, 'html', gDate, haveAudio)
-    };
-
-    if(process.env.SCRAWL_WP_USERNAME && process.env.SCRAWL_WP_PASSWORD) {
-      postToWordpress(
-        process.env.SCRAWL_WP_USERNAME, process.env.SCRAWL_WP_PASSWORD,
-        content, callback);
-    } else {
-      var prompt = require('prompt');
-      prompt.start();
-      prompt.get({
-        properties: {
-          username: {
-            description: 'Enter the WordPress username',
-            pattern: /^.{4,}$/,
-            message: 'The username must be at least 4 characters.',
-            'default': 'msporny'
-          },
-          password: {
-            description: 'Enter the user\'s password',
-            pattern: /^.{4,}$/,
-            message: 'The password must be at least 4 characters.',
-            hidden: true,
-            'default': 'password'
-          }
-        }
-      }, function(err, results) {
-        postToWordpress(results.username, results.password, content, callback);
-      });
-    }
   } else {
     callback();
   }
