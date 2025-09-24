@@ -75,14 +75,13 @@ There are several more options available.
     -d, --directory <directory>  The directory to process.
     -m, --html                   If set, write the minutes to an index.html file
     -e, --email                  If set, publish the minutes to the mailing list
-    -t, --twitter                If set, publish the minutes to Twitter
     -g, --google                 If set, publish the minutes to G+
     -i, --index                  Build meeting index
     -q, --quiet                  Don't print status information to the console
 
 ```
 
-The Google and Twitter related switches also require some custom
+The Google related switch also requires some custom
 environment variables to be setup. For examples of those, see the
 [publish.sh.example](publish.sh.example).
 
