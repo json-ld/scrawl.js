@@ -17,7 +17,6 @@ program
   // the do something switches
   .option('-m, --html', 'If set, write the minutes to an index.html file')
   .option('-e, --email', 'If set, publish the minutes to the mailing list')
-  .option('-g, --google', 'If set, publish the minutes to G+')
   .option('-i, --index', 'Build meeting index')
   // the tweak the cli switch
   .option('-q, --quiet', 'Don\'t print status information to the console')
@@ -41,7 +40,7 @@ if(!program.directory) {
   process.exit(1);
 }
 
-if (!program.html && !program.email && !program.google && !program.index) {
+if (!program.html && !program.email && !program.index) {
   console.error('Error: Nothing to do...');
   program.outputHelp();
   process.exit(1);
@@ -82,26 +81,6 @@ if (!('minutes_base_url' in config)) {
 }
 // Location of date-based minutes folders; MUST end in a forward slash
 scrawl.minutes_base_url = config.minutes_base_url;
-
-// Mustache template - vars: gDate, formattedItems, content, minutes_base_url
-const GPLUS_BODY = ('gplus' in config && 'body' in config.gplus)
-                    ? config.gplus.body
-                    : `*Meeting Summary for {{gDate}}*
-
-We discussed {{formattedItems}}.
-
-{{{content}}}
-
-Full transcript and audio logs are available here:
-
-{{{minutes_base_url}}}{{gDate}}/
-`;
-
-// Mustache template - vars: group, message, gDate, minutes_base_url
-const TWITTER_BODY = ('twitter' in config && 'body' in config.twitter)
-                      ? config.twitter.body
-                      : `{{group}} discusses {{message}}:
-{{{minutes_base_url}}}{{gDate}}/`;
 
 /************************* Utility Functions *********************************/
 function sendEmail(username, password, hostname, content, callback) {
@@ -356,40 +335,6 @@ Full text of the discussion follows for archival purposes.
           content, callback);
       });
     }
-  } else {
-    callback();
-  }
-}, function(callback) {
-  // format the G+ post for copy-paste
-  if(program.google) {
-    if(!program.quiet) {
-      console.log('scrawl: Composing new G+ message.');
-    }
-
-    // generate the body of the email
-    var content = scrawl.generateMinutes(gLogData, 'text', gDate, haveAudio);
-    content = content.match(/Agenda(.|\n)*Organizer:/)[0].replace('Organizer:', '');
-    var items = content.match(/Topics(.|\n)*(Action|Resolutions|.*)/)[0].match(/[0-9]{1,2}\. (.*)/g);
-    var formattedItems = '';
-
-    // create a brief description of what was discussed
-    for(var i = 0; i < items.length; i++) {
-       if(i > 0 && i < items.length - 1) {
-         formattedItems += ', ';
-       }
-       else if(i == items.length - 1) {
-         formattedItems += ', and ';
-       }
-       formattedItems += items[i].replace(/[0-9]{1,2}\. /, '').toLowerCase();
-    }
-
-    // format in a way that is readable on G+
-    content = Mustache.render(GPLUS_BODY, {gDate, formattedItems, content,
-                              minutes_base_url: scrawl.minutes_base_url});
-
-    console.log('scrawl: You will need to paste this to your G+ stream:\n');
-    console.log(content);
-    callback();
   } else {
     callback();
   }
