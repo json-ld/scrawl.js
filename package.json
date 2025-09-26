@@ -1,6 +1,6 @@
 {
   "name": "scrawl",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "IRC log processing tool for scribes to assist in creating minutes for W3C group.",
   "keywords": [
     "IRC",

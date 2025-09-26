@@ -9,7 +9,7 @@ var scrawl = require('./www/scrawl');
 const yaml = require('js-yaml');
 
 program
-  .version('0.6.0')
+  .version('0.7.0')
   // the setup switches
   .option('-c, --config <file>', 'The YAML configuration file.')
   .option('-d, --directory <directory>', 'The directory to process.')
