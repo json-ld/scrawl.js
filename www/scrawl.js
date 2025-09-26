@@ -161,9 +161,9 @@
   {
     let rval = '';
 
+    const [h, t] = Number.isInteger(id) ? ['h1', 'Topic'] : ['h2', 'Subtopic'];
     if(textMode === 'html')
     {
-      const [h, t] = Number.isInteger(id) ? ['h1', 'Topic'] : ['h2', 'Subtopic'];
       rval = '<' + h + ' onmouseout="$(\'#link-topic-' + id + '\').hide()" ' +
         'onmouseover="$(\'#link-topic-' + id + '\').show()" ' +
         'id="topic-' + id + '" class="topic">\n';
