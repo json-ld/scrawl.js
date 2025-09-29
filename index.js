@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 var async = require('async');
-var email = require('emailjs');
 var fs = require('fs');
 var path = require('path');
 var program = require('commander');
@@ -10,13 +9,13 @@ var scrawl = require('./www/scrawl');
 const yaml = require('js-yaml');
 
 program
-  .version('0.6.0')
+  .version('0.7.0')
   // the setup switches
   .option('-c, --config <file>', 'The YAML configuration file.')
   .option('-d, --directory <directory>', 'The directory to process.')
   // the do something switches
   .option('-m, --html', 'If set, write the minutes to an index.html file')
-  .option('-e, --email', 'If set, publish the minutes to the mailing list')
+  .option('-e, --email', 'If set, write an email.log file for later sending')
   .option('-i, --index', 'Build meeting index')
   // the tweak the cli switch
   .option('-q, --quiet', 'Don\'t print status information to the console')
@@ -52,6 +51,7 @@ const logFile = path.resolve(dstDir, 'irc.log');
 const changesLogFile = path.resolve(dstDir, 'changes.log');
 const audioFile = path.resolve(dstDir, 'audio.ogg');
 const indexFile = path.resolve(dstDir, 'index.html');
+const emailContentsFile = path.resolve(dstDir, 'email.log');
 const minutesDir = path.join(dstDir, '/..');
 
 const partialsDir = ('partials' in config)
@@ -83,34 +83,6 @@ if (!('minutes_base_url' in config)) {
 // Location of date-based minutes folders; MUST end in a forward slash
 scrawl.minutes_base_url = config.minutes_base_url;
 
-/************************* Utility Functions *********************************/
-function sendEmail(username, password, hostname, content, callback) {
-  var server  = email.server.connect({
-    //user: username,
-    //password: password,
-    host: hostname,
-    ssl: false
-  });
-
-  // send the message
-  server.send({
-    text:    content,
-    from: EMAIL_FROM,
-    //from:    username + '@' + hostname,
-    to: EMAIL_TO,
-    subject: Mustache.render(EMAIL_SUBJECT, {gDate})
-  }, function(err, message) {
-    if(err) {
-      console.log('scrawl:', err);
-      return callback();
-    }
-
-    if(!program.quiet) {
-      console.log(`scrawl: Sent minutes email to ${EMAIL_TO}`);
-    }
-    callback();
-  });
-}
 /*************************** Main Functionality ******************************/
 
 async.waterfall([ function(callback) {
@@ -270,10 +242,10 @@ async.waterfall([ function(callback) {
     callback();
   }
 }, function(callback) {
-  // send the email about the meeting
+  // generate an email about the meeting
   if(program.email) {
     if(!program.quiet) {
-      console.log('scrawl: Sending new minutes email.');
+      console.log('scrawl: Drafting new minutes email.');
     }
 
     if (!('email' in config)) {
@@ -283,11 +255,6 @@ async.waterfall([ function(callback) {
       callback('Error: You must supply a `to` and `from` config value');
       return;
     }
-
-    // see sendEmail()
-    // TODO: don't use global constants...
-    const EMAIL_TO = config.email.to;
-    const EMAIL_FROM = config.email.from;
 
     // Mustache template -- vars: gDate
     // TODO: dates are always Eastern Time...maybe the world is round?
@@ -306,49 +273,12 @@ Full text of the discussion follows for archival purposes.
 {{{content}}}`;
 
     // generate the body of the email
-    var content = scrawl.generateMinutes(gLogData, 'text', gDate, haveAudio);
-    var scribe = content.match(/Scribe:\n\s(.*)\n/g)[0]
+    const content = scrawl.generateMinutes(gLogData, 'text', gDate, haveAudio);
+    const scribe = content.match(/Scribe:\n\s(.*)\n/g)[0]
       .replace(/\n/g, '').replace('Scribe:  ', '');
-    content = Mustache.render(EMAIL_BODY,
-                              {scribe, gDate, content,
-                                minutes_base_url: scrawl.minutes_base_url,
-                                haveAudio});
-
-    if(process.env.SCRAWL_EMAIL_USERNAME && process.env.SCRAWL_EMAIL_PASSWORD &&
-      process.env.SCRAWL_EMAIL_SERVER) {
-      sendEmail(
-        process.env.SCRAWL_EMAIL_USERNAME, process.env.SCRAWL_EMAIL_PASSWORD,
-        process.env.SCRAWL_EMAIL_SERVER, content, callback);
-    } else {
-      var prompt = require('prompt');
-      prompt.start();
-      prompt.get({
-        properties: {
-          server: {
-            description: 'Enter your email server',
-            pattern: /^.{4,}$/,
-            message: 'The server name must be at least 4 characters.',
-            'default': 'mail.digitalbazaar.com'
-          },
-          username: {
-            description: 'Enter your email login name',
-            pattern: /^.{1,}$/,
-            message: 'The username must be at least 4 characters.',
-            'default': 'msporny'
-          },
-          password: {
-            description: 'Enter your email password',
-            pattern: /^.{4,}$/,
-            message: 'The password must be at least 4 characters.',
-            hidden: true,
-            'default': 'password'
-          }
-        }
-      }, function(err, results) {
-        sendEmail(results.username, results.password, results.server,
-          content, callback);
-      });
-    }
+    const body = Mustache.render(EMAIL_BODY, {scribe, gDate, content,
+      minutes_base_url: scrawl.minutes_base_url, haveAudio});
+    fs.writeFileSync(emailContentsFile, body, 'utf-8');
   } else {
     callback();
   }
